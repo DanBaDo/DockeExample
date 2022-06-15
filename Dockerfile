@@ -6,12 +6,14 @@ WORKDIR /usr/src/app/
 
 COPY . .
 
-RUN cd frontend
+WORKDIR /usr/src/app/frontend
 RUN npm install
 RUN npm run build
-RUN rm -rf node_modules public src .gitignore package*.json README.md
+RUN mv build ..
 
-RUN cd ../backend
-RUN npm install --only=production
+WORKDIR /usr/src/app/
+RUN rm frontend -rf
 
-CMD [ "node", "index.mjs" ]
+WORKDIR /usr/src/app/backend
+RUN npm install --omit=dev
+ENTRYPOINT [ "npm", "start" ]
