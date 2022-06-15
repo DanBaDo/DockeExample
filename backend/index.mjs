@@ -11,5 +11,4 @@ app.get("/random_food/",(req, res)=>{
     res.send(food[randomIndex])
 })
 
-
 app.listen(8080)
