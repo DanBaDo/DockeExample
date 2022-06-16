@@ -1,4 +1,7 @@
 import express from "express"
+import { config } from "dotenv"
+
+if ( process.env.NODE_ENV != "production" ) config()
 
 const app = express()
 
@@ -11,4 +14,4 @@ app.get("/random_food/",(req, res)=>{
     res.send(food[randomIndex])
 })
 
-app.listen(8080)
+app.listen( process.env.PORT, ()=> console.log(`Listening at ${process.env.PORT}`) )
