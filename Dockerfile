@@ -9,10 +9,7 @@ COPY . .
 WORKDIR /usr/src/app/frontend
 RUN npm install
 RUN npm run build
-RUN mv build ..
-
-WORKDIR /usr/src/app/
-RUN rm frontend -rf
+RUN rm .gitignore package.json package-lock.json public README.md src node_modules -rf
 
 WORKDIR /usr/src/app/backend
 RUN npm install --omit=dev
