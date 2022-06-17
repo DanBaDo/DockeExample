@@ -3,28 +3,38 @@ import './App.css';
 
 function App() {
 
-let HOST
+  let HOST
 
-switch (window.location.hostname) {
-  case "localhost":
-    HOST="http://localhost:8080/"
-    break;
+  switch (window.location.hostname) {
+    case "localhost":
+      HOST="http://localhost:8080/"
+      break;
 
-  case "127.0.0.1":
-    HOST="http://127.0.0.1:8080/"
-    break;
-    
-  default:
-    HOST="/"
-    break;
-}
+    case "127.0.0.1":
+      HOST="http://127.0.0.1:8080/"
+      break;
+      
+    default:
+      HOST="/"
+      break;
+  }
 
   const [ food, setFood ] = useState("...")
+  const [ showForm, setShowForm ] = useState(false)
 
   async function fetchFood () {
     const response = await fetch(HOST+"random_food/")
     const data = await response.text()
     setFood(data) 
+  }
+
+  async function floatingButtonClickHandler (event) {
+    console.log("...");
+    setShowForm(!showForm)
+  }
+
+  async function submitHandler (event) {
+    console.log("...");
   }
 
   useEffect(
@@ -37,6 +47,14 @@ switch (window.location.hostname) {
   return (
     <div className="wrapper">
       <h1>Hoy toca comer {food}.</h1>
+
+      <form className={showForm ? "show form" : "form"} onSubmit={submitHandler}>
+        <input type={"url"}/>
+        <input type={"submit"}/>
+      </form>
+      
+
+      <button className="floating-button" onClick={floatingButtonClickHandler}>+</button>
     </div>
   )
 }
