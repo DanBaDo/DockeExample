@@ -3,7 +3,6 @@ FROM node:16
 EXPOSE 8080
 
 WORKDIR /usr/src/app/
-
 COPY . .
 
 WORKDIR /usr/src/app/frontend
@@ -13,4 +12,5 @@ RUN rm .gitignore package.json package-lock.json public README.md src node_modul
 
 WORKDIR /usr/src/app/backend
 RUN npm install --omit=dev
+
 ENTRYPOINT [ "npm", "start" ]
