@@ -1,11 +1,57 @@
 .wrapper {
   width: 100vw;
   height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
   background-color: orange;
   color: white;
+}
+
+.form {
+  height: 0px;
+  transition: transform 0.5s, opacity 0.5s, height 0.5s;
+  transform: translate(0px, 100px);
+  opacity: 0;
+}
+
+.show {
+  height: 4rem;
+  transform: translate(0px, 0px);
+  opacity: 1;
+}
+
+.form > input{
+  font-size: large;
+  padding: 1em;
+  border: none;
+  color: green;
+}
+
+.form > input:nth-child(1) {
+  border-radius: 0.5em 0 0 0.5em;
+}
+
+.form > input:nth-last-child(1) {
+  border-radius: 0 0.5em 0.5em 0;
+}
+
+.form > input[type=submit] {
+  color: white;
+  background: green;
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 2.5rem;
+  border: none;
+  background-color: white;
+  color: orange;
+  font-size: 4rem;
+  font-weight: bolder;
 }
