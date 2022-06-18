@@ -1,11 +1,14 @@
 import express from "express"
 import { config } from "dotenv"
 
-import { dbAddRecipe, dbGetDishes } from "./db.mjs";
-
-if ( process.env.NODE_ENV != "production" ) config()
+import { dbAddRecipe, dbGetDishes, dbGetRandomRecipe } from "./db.mjs";
+import { exceptionHandlerDecorator } from "./auxiliars.mjs";
 
 const app = express()
+
+if ( process.env.NODE_ENV != "production" ) {
+    config()
+}
 
 const food = ["tortilla", "sopa", "ensalada", "aceitunas", "queso"]
 
@@ -14,6 +17,14 @@ app.use("/",express.static("../frontend/build/", {index: "index.html"}))
 app.get("/random_food/",(req, res)=>{
     const randomIndex = Math.floor(Math.random()*(food.length-1))
     res.send(food[randomIndex])
+})
+
+app.get("/dishes/random/", async (req, res)=>{
+    res.json(
+        //exceptionHandlerDecorator(
+            (await dbGetRandomRecipe()).rows[0]//, res
+        //)
+    )
 })
 
 app.get("/dishes/", async (req, res)=>{

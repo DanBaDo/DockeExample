@@ -11,15 +11,23 @@ const createRecipesTableSQL = `
     )
 `
 
-export const addRecipeSQL = `
-        INSERT INTO recipes(url, dish) VALUES ($1, $2)
+const addRecipeSQL = `
+    INSERT INTO recipes(url, dish) VALUES ($1, $2)
 `
 
-export const getDishesSQL = `
-        SELECT DISTINCT dish FROM recipes 
+const getDishesSQL = `
+    SELECT DISTINCT dish FROM recipes 
 `
 
-export const db = new pg.Client(process.env.PG_URL)
+const getTotalNumberOfRecipesSQL = `
+    SELECT COUNT(*) FROM recipes
+`
+
+const getRandomRecipeSQL = `
+    SELECT * FROM recipes ORDER BY RANDOM() LIMIT 1
+`
+
+const db = new pg.Client(process.env.PG_URL)
 db.connect()
 
 export function dbQueryFactory ( sql ) {
@@ -33,7 +41,11 @@ export const dbCreateTables = dbQueryFactory(createRecipesTableSQL)
 
 export const dbAddRecipe = dbQueryFactory(addRecipeSQL)
 
+export const dbGetTotalNumberOfRecipes = dbQueryFactory(getTotalNumberOfRecipesSQL)
+
 export const dbGetDishes = dbQueryFactory(getDishesSQL)
+
+export const dbGetRandomRecipe = dbQueryFactory(getRandomRecipeSQL)
 
 try {
     dbCreateTables()
