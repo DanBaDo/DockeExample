@@ -11,7 +11,7 @@ const createRecipesTableSQL = `
     )
 `
 
-export const addDishesSQL = `
+export const addRecipeSQL = `
         INSERT INTO recipes(url, dish) VALUES ($1, $2)
 `
 
@@ -22,8 +22,21 @@ export const getDishesSQL = `
 export const db = new pg.Client(process.env.PG_URL)
 db.connect()
 
+export function dbQueryFactory ( sql ) {
+    return async function ( args = [] ) {
+        const dbResponse = await db.query(sql, args)
+        return dbResponse
+    }
+}
+
+export const dbCreateTables = dbQueryFactory(createRecipesTableSQL)
+
+export const dbAddRecipe = dbQueryFactory(addRecipeSQL)
+
+export const dbGetDishes = dbQueryFactory(getDishesSQL)
+
 try {
-    db.query(createRecipesTableSQL);
+    dbCreateTables()
 } catch (error) {
     console.error("Error trying to create tables")
     throw error

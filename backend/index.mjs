@@ -1,7 +1,7 @@
 import express from "express"
 import { config } from "dotenv"
 
-import { db, getDishesSQL, addDishesSQL } from "./db.mjs"
+import { dbAddRecipe, dbGetDishes } from "./db.mjs";
 
 if ( process.env.NODE_ENV != "production" ) config()
 
@@ -17,13 +17,23 @@ app.get("/random_food/",(req, res)=>{
 })
 
 app.get("/dishes/", async (req, res)=>{
-    const dbResponse = await db.query(getDishesSQL)
-    res.json(dbResponse.rows)
+    try {
+        const dbResponse = await dbGetDishes()
+        res.json(dbResponse.rows)
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500)
+    }
 })
 
 app.post("/dishes/", express.json(), async (req, res)=>{
-    const dbResponse = await db.query(addDishesSQL, [req.body.url, req.body.dish])
-    res.json(dbResponse)
+    try {
+        const dbResponse = await dbAddRecipe([req.body.url, req.body.dish])
+        res.json(dbResponse)
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500)
+    }
 })
 
 app.listen( process.env.PORT, ()=> console.log(`Listening at ${process.env.PORT}`) )
