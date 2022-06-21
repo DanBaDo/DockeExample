@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react"
+import { createAvatar } from '@dicebear/avatars';
+import * as style from '@dicebear/big-smile';
 
 import './App.css';
+
+let avatar = createAvatar(style, {
+  seed: btoa(Date.now()),
+  flip: true,
+  dataUri: true,
+});
 
 function App() {
 
@@ -78,6 +86,8 @@ function App() {
 
   return (
     <div className="wrapper">
+
+      <img className={"avatar"} src={avatar} alt="User avatar"/>
       
       <h1>Hoy toca comer {dish}.</h1>
 
