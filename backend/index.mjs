@@ -19,16 +19,6 @@ app.get("/random_food/",(req, res)=>{
     res.send(food[randomIndex])
 })
 
-<<<<<<< HEAD
-app.get("/dishes/", async (req, res)=>{
-    const dbResponse = await db.query(getDishesSQL)
-    res.json(dbResponse.rows)
-})
-
-app.post("/dishes/", express.json(), async (req, res)=>{
-    const dbResponse = await db.query(addDishesSQL, [req.body.url, req.body.dish])
-    res.json(dbResponse)
-=======
 app.get("/dishes/random/", async (req, res)=>{
     res.json(
         //exceptionHandlerDecorator(
@@ -55,7 +45,6 @@ app.post("/dishes/", express.json(), async (req, res)=>{
         console.error(err);
         res.sendStatus(500)
     }
->>>>>>> a395e040801c50a5b4d7e383fcf3f70a973ae92e
 })
 
 app.listen( process.env.PORT, ()=> console.log(`Listening at ${process.env.PORT}`) )
