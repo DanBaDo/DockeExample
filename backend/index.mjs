@@ -1,5 +1,6 @@
 import express from "express"
 import { config } from "dotenv"
+import aws from "aws-sdk"
 
 import { dbAddRecipe, dbGetDishes, dbGetRandomRecipe } from "./db.mjs";
 import { exceptionHandlerDecorator } from "./auxiliars.mjs";
@@ -10,20 +11,11 @@ if ( process.env.NODE_ENV != "production" ) {
     config()
 }
 
-const food = ["tortilla", "sopa", "ensalada", "aceitunas", "queso"]
-
 app.use("/",express.static("../frontend/build/", {index: "index.html"}))
-
-app.get("/random_food/",(req, res)=>{
-    const randomIndex = Math.floor(Math.random()*(food.length-1))
-    res.send(food[randomIndex])
-})
 
 app.get("/dishes/random/", async (req, res)=>{
     res.json(
-        //exceptionHandlerDecorator(
-            (await dbGetRandomRecipe()).rows[0]//, res
-        //)
+        (await dbGetRandomRecipe()).rows[0]
     )
 })
 
@@ -46,5 +38,39 @@ app.post("/dishes/", express.json(), async (req, res)=>{
         res.sendStatus(500)
     }
 })
+
+app.post("/upload/:fileId", async (req, res)=>{
+    try {
+
+        const s3 = new aws.S3({
+            endpoint: process.env.S3_ENDPOINT,
+            s3ForcePathStyle: true,
+            signatureVersion: process.env.S3_SIGNATURE_VERSION,
+            connectTimeout: 0,
+            httpOptions: { timeout: 0 },
+        });
+
+        const s3Response = s3.upload({
+            Bucket: process.env.S3_BUCKET,
+            Key: req.params.fileId,
+            Body: req,
+            ContentType: req.headers['content-type'],
+            ContentLength: req.headers['content-length'],
+            ACL:'public-read'
+        })
+
+        const data = await s3Response.promise()
+        console.log(data);
+
+        res.sendStatus(201)
+
+
+    } catch (err) {
+        console.error(err)
+        res.sendStatus(500)
+    }
+})
+
+// var fileStream = s3.getObject(options).createReadStream();
 
 app.listen( process.env.PORT, ()=> console.log(`Listening at ${process.env.PORT}`) )
