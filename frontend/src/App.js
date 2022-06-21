@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react"
+import { createAvatar } from '@dicebear/avatars';
+import * as style from '@dicebear/big-smile';
+
 import './App.css';
+
+let avatar = createAvatar(style, {
+  seed: btoa(Date.now()),
+  flip: true,
+  dataUri: true,
+});
 
 function App() {
 
@@ -19,23 +28,49 @@ function App() {
       break;
   }
 
-  const [ dishesList, setDishesList ] = useState([])
-  const [ dish, setDish ] = useState("...")
-  const [ url, setUrl ] = useState("")
-  const [ showForm, setShowForm ] = useState(false)
+  const [ recipe, setRecipeState ] = useState()
+  const [ dish, setDishState ] = useState("...")
+  const [ url, setUrlState ] = useState("")
+  const [ showsForm, setShowsFormState ] = useState(false)
 
-  async function fetchDishesList () {
-    const response = await fetch(HOST+"dishes/")
+  async function getRandomRecipe () {
+    const response = await fetch(HOST+"dishes/random/")
     const data = await response.json()
-    setDishesList(data)
+    setRecipeState(data)
+    setDishState(data.dish)
+    setUrlState(data.url)
   }
 
-  async function changeUrlHandler (event) {
-    if (event.target.validity.valid) setUrl(event.target.value)
+  async function onChangeUrlInput (event) {
+    setUrlState(event.target.value)
   }
 
-  async function floatingButtonClickHandler () {
-    setShowForm(!showForm)
+  async function onChangeDishInput (event) {
+    setDishState(event.target.value)
+  }
+
+  async function onClickAddButton () {
+    setShowsFormState(!showsForm)
+  }
+
+  async function onFormSubmit (event) {
+    event.preventDefault()
+    setShowsFormState(false)
+    setUrlState('')
+    const form = new FormData(event.target)
+    fetch(HOST+"dishes/",{
+      method: "POST",
+      body: JSON.stringify(Object.fromEntries(form)),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    
+  }
+
+  async function floatingButtonClickHandler (event) {
+    console.log("...");
+    setShowsFormState(!showsForm)
   }
 
   async function submitHandler (event) {
@@ -47,7 +82,7 @@ function App() {
 
   useEffect(
     ()=>{
-      fetchDishesList()
+      getRandomRecipe()
     },
     []
   )
@@ -62,17 +97,65 @@ function App() {
 
   return (
     <div className="wrapper">
+
+      <img className={"avatar"} src={avatar} alt="User avatar"/>
+      
       <h1>Hoy toca comer {dish}.</h1>
 
-      <form className={showForm ? "show form" : "form"} onSubmit={submitHandler}>
-        <input type={"url"} name="url" placeholder="write yout recipe URL" value={url} onChange={changeUrlHandler}/>
+      {/* TODO: use https://www.npmjs.com/package/link-preview-js */}
+      <iframe width="300" height="200" src={url}/>
+
+      <form className={showsForm ? "show form" : "form"} onSubmit={onFormSubmit}>
+        <input type={"text"} name="dish" placeholder="write a dish" value={dish} onChange={onChangeDishInput}/>
+        <input type={"url"} name="url" placeholder="write yout recipe URL" value={url} onChange={onChangeUrlInput}/>
         <input type={"submit"}/>
       </form>
       
+      <button className="floating-button" onClick={onClickAddButton}>+</button>
 
-      <button className="floating-button" onClick={floatingButtonClickHandler}>+</button>
     </div>
   )
 }
 
 export default App;
+
+/*
+const s3 = new aws.S3({
+  apiVersion: process.env.S3_API_VERSION,
+  endpoint: process.env.S3_ENDPOINT,
+  signatureVersion: process.env.S3_SIGNATURE_VERSION,
+})
+*/
+
+/*
+app.post("/upload/:articleId", async (req, res)=>{
+    try {
+
+        const s3ObjectKey = Date.now().toString()
+
+        const s3Response = s3.upload({ //s3.putObject()
+            Bucket: process.env.S3_BUCKET,
+            Key: s3ObjectKey,
+            Body: req,
+            ContentType: req.headers['content-type'],
+            ContentLength: req.headers['content-length']
+        })
+
+        const data = await s3Response.promise()
+
+        const articleIdx = mockedDB.findIndex(
+            item => item.id === req.params.articleId
+        )
+
+        mockedDB[articleIdx].imageKey = data.Key
+        mockedDB[articleIdx].imagePublicURL = data.Location
+
+        res.sendStatus(201)
+        
+    } catch (err) {
+        console.error(err)
+        res.sendStatus(500)
+    }
+
+})
+*/

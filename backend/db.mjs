@@ -10,20 +10,55 @@ const createRecipesTableSQL = `
         dish VARCHAR(50)
     )
 `
-
-export const addDishesSQL = `
-        INSERT INTO recipes(url, dish) VALUES ($1, $2)
+const createUsersTableSQL = `
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100),
+        password VARCHAR(20),
+        avatar VARCHAR(20)
+    )
 `
 
-export const getDishesSQL = `
-        SELECT DISTINCT dish FROM recipes 
+const addRecipeSQL = `
+    INSERT INTO recipes(url, dish) VALUES ($1, $2)
 `
 
-export const db = new pg.Client(process.env.PG_URL)
+const getDishesSQL = `
+    SELECT DISTINCT dish FROM recipes 
+`
+
+const getTotalNumberOfRecipesSQL = `
+    SELECT COUNT(*) FROM recipes
+`
+
+const getRandomRecipeSQL = `
+    SELECT * FROM recipes ORDER BY RANDOM() LIMIT 1
+`
+
+const db = new pg.Client(process.env.PG_URL)
 db.connect()
 
+export function dbQueryFactory ( sql ) {
+    return async function ( args = [] ) {
+        const dbResponse = await db.query(sql, args)
+        return dbResponse
+    }
+}
+
+export const dbCreateRecipesTables = dbQueryFactory(createRecipesTableSQL)
+export const dbCreateUsersTables = dbQueryFactory(createUsersTableSQL)
+
+export const dbAddRecipe = dbQueryFactory(addRecipeSQL)
+
+export const dbGetTotalNumberOfRecipes = dbQueryFactory(getTotalNumberOfRecipesSQL)
+
+export const dbGetDishes = dbQueryFactory(getDishesSQL)
+
+export const dbGetRandomRecipe = dbQueryFactory(getRandomRecipeSQL)
+
 try {
-    db.query(createRecipesTableSQL);
+    dbCreateRecipesTables()
+    dbCreateUsersTables()
 } catch (error) {
     console.error("Error trying to create tables")
     throw error
