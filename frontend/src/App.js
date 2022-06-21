@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+
 import './App.css';
 
 function App() {
@@ -19,18 +20,49 @@ function App() {
       break;
   }
 
-  const [ food, setFood ] = useState("...")
-  const [ showForm, setShowForm ] = useState(false)
+  const [ recipe, setRecipeState ] = useState()
+  const [ dish, setDishState ] = useState("...")
+  const [ url, setUrlState ] = useState("")
+  const [ showsForm, setShowsFormState ] = useState(false)
 
-  async function fetchFood () {
-    const response = await fetch(HOST+"random_food/")
-    const data = await response.text()
-    setFood(data) 
+  async function getRandomRecipe () {
+    const response = await fetch(HOST+"dishes/random/")
+    const data = await response.json()
+    setRecipeState(data)
+    setDishState(data.dish)
+    setUrlState(data.url)
+  }
+
+  async function onChangeUrlInput (event) {
+    setUrlState(event.target.value)
+  }
+
+  async function onChangeDishInput (event) {
+    setDishState(event.target.value)
+  }
+
+  async function onClickAddButton () {
+    setShowsFormState(!showsForm)
+  }
+
+  async function onFormSubmit (event) {
+    event.preventDefault()
+    setShowsFormState(false)
+    setUrlState('')
+    const form = new FormData(event.target)
+    fetch(HOST+"dishes/",{
+      method: "POST",
+      body: JSON.stringify(Object.fromEntries(form)),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    
   }
 
   async function floatingButtonClickHandler (event) {
     console.log("...");
-    setShowForm(!showForm)
+    setShowsFormState(!showsForm)
   }
 
   async function submitHandler (event) {
@@ -39,22 +71,27 @@ function App() {
 
   useEffect(
     ()=>{
-      fetchFood()
+      getRandomRecipe()
     },
     []
   )
 
   return (
     <div className="wrapper">
-      <h1>Hoy toca comer {food}.</h1>
+      
+      <h1>Hoy toca comer {dish}.</h1>
 
-      <form className={showForm ? "show form" : "form"} onSubmit={submitHandler}>
-        <input type={"url"}/>
+      {/* TODO: use https://www.npmjs.com/package/link-preview-js */}
+      <iframe width="300" height="200" src={url}/>
+
+      <form className={showsForm ? "show form" : "form"} onSubmit={onFormSubmit}>
+        <input type={"text"} name="dish" placeholder="write a dish" value={dish} onChange={onChangeDishInput}/>
+        <input type={"url"} name="url" placeholder="write yout recipe URL" value={url} onChange={onChangeUrlInput}/>
         <input type={"submit"}/>
       </form>
       
+      <button className="floating-button" onClick={onClickAddButton}>+</button>
 
-      <button className="floating-button" onClick={floatingButtonClickHandler}>+</button>
     </div>
   )
 }
