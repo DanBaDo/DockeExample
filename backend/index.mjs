@@ -2,8 +2,7 @@ import express from "express"
 import { config } from "dotenv"
 import aws from "aws-sdk"
 
-import { dbAddRecipe, dbGetDishes, dbGetRandomRecipe } from "./db.mjs";
-import { exceptionHandlerDecorator } from "./auxiliars.mjs";
+import { dbAddRecipe, dbGetRandomRecipe } from "./db.mjs";
 
 const app = express()
 
@@ -17,16 +16,6 @@ app.get("/dishes/random/", async (req, res)=>{
     res.json(
         (await dbGetRandomRecipe()).rows[0]
     )
-})
-
-app.get("/dishes/", async (req, res)=>{
-    try {
-        const dbResponse = await dbGetDishes()
-        res.json(dbResponse.rows)
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500)
-    }
 })
 
 app.post("/dishes/", express.json(), async (req, res)=>{

@@ -74,7 +74,10 @@ function App() {
   }
 
   async function submitHandler (event) {
-    console.log("...");
+    event.preventDefault()
+    setShowForm(false)
+    setUrl('')
+    console.log(event);
   }
 
   useEffect(
@@ -82,6 +85,14 @@ function App() {
       getRandomRecipe()
     },
     []
+  )
+
+  useEffect(
+    ()=>{
+      const randomIndex = Math.floor(Math.random()*(dishesList.length-1))
+      setDish(dishesList[randomIndex]?.dish)
+    },
+    [dishesList]
   )
 
   return (
