@@ -10,6 +10,14 @@ const createRecipesTableSQL = `
         dish VARCHAR(50)
     )
 `
+const createUsersTableSQL = `
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100),
+        password VARCHAR(20),
+        avatar VARCHAR(20)
+    )
+`
 
 const addRecipeSQL = `
     INSERT INTO recipes(url, dish) VALUES ($1, $2)
@@ -37,7 +45,8 @@ export function dbQueryFactory ( sql ) {
     }
 }
 
-export const dbCreateTables = dbQueryFactory(createRecipesTableSQL)
+export const dbCreateRecipesTables = dbQueryFactory(createRecipesTableSQL)
+export const dbCreateUsersTables = dbQueryFactory(createUsersTableSQL)
 
 export const dbAddRecipe = dbQueryFactory(addRecipeSQL)
 
@@ -48,7 +57,8 @@ export const dbGetDishes = dbQueryFactory(getDishesSQL)
 export const dbGetRandomRecipe = dbQueryFactory(getRandomRecipeSQL)
 
 try {
-    dbCreateTables()
+    dbCreateRecipesTables()
+    dbCreateUsersTables()
 } catch (error) {
     console.error("Error trying to create tables")
     throw error
