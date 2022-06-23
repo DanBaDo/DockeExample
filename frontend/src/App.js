@@ -75,8 +75,8 @@ function App() {
 
   async function submitHandler (event) {
     event.preventDefault()
-    setShowForm(false)
-    setUrl('')
+    setShowsFormState(false)
+    setUrlState('')
     console.log(event);
   }
 
@@ -85,14 +85,6 @@ function App() {
       getRandomRecipe()
     },
     []
-  )
-
-  useEffect(
-    ()=>{
-      const randomIndex = Math.floor(Math.random()*(dishesList.length-1))
-      setDish(dishesList[randomIndex]?.dish)
-    },
-    [dishesList]
   )
 
   return (
@@ -112,7 +104,6 @@ function App() {
       </form>
       
       <button className="floating-button" onClick={onClickAddButton}>+</button>
-
     </div>
   )
 }
