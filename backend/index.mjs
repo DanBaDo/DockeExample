@@ -35,8 +35,6 @@ app.post("/upload/:fileId", async (req, res)=>{
             endpoint: process.env.S3_ENDPOINT,
             s3ForcePathStyle: true,
             signatureVersion: process.env.S3_SIGNATURE_VERSION,
-            connectTimeout: 0,
-            httpOptions: { timeout: 0 },
         });
 
         const s3Response = s3.upload({
@@ -45,7 +43,6 @@ app.post("/upload/:fileId", async (req, res)=>{
             Body: req,
             ContentType: req.headers['content-type'],
             ContentLength: req.headers['content-length'],
-            ACL:'public-read'
         })
 
         const data = await s3Response.promise()
